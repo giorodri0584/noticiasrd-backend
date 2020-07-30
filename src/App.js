@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 
 const App = () => {
   const [submited, setSubmited] = useState(false);
+  const [isSaved,setIsSaved] = useState(false);
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -37,17 +38,24 @@ const App = () => {
     return errors;
   }
 
-  const saveArticle = async (values) => {
-    console.log(values);
-    // firestore
-    //   .collection("articles")
-    //   .add(article)
-    //   .then((docRef) => {
-    //     console.log("Article ID: " + docRef.id);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+  const renderSaveNotification = () =>{
+    return (
+      <div class="notification is-success">
+        Article was successfully saved.
+      </div>
+    );
+  }
+  const saveArticle = async (article) => {
+    firestore
+      .collection("articles")
+      .add(article)
+      .then((docRef) => {
+        console.log("Article ID: " + docRef.id);
+        setIsSaved(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -124,10 +132,11 @@ const App = () => {
           </div>
           {formik.errors.authorLogo && formik.touched.authorLogo ? <p className="help is-danger">{formik.errors.authorLogo}</p> : null}
         </div>
+        { isSaved ? renderSaveNotification() : null}
         <br />
         <div className="field is-group">
           <div className="control">
-            <button className="button is-primary" type="submit" disabled={!(formik.isValid && formik.dirty)}>
+            <button className="button is-primary" type="submit" disabled={!(formik.isValid && formik.dirty) || isSaved}>
               Submit
             </button>
           </div>
