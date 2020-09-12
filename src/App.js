@@ -12,6 +12,7 @@ const App = () => {
       coverImageUrl: "",
       author: "",
       authorLogo: "",
+      content: "",
       createdAt: Math.round(new Date().getTime() / 1000),
     },
     onSubmit: values => saveArticle(values),
@@ -35,6 +36,9 @@ const App = () => {
     if(!values.authorLogo){
       errors.authorLogo = "Author Logo  is Required"
     }
+    if(!values.content){
+      errors.content = "Content is Required"
+    }
     return errors;
   }
 
@@ -47,7 +51,7 @@ const App = () => {
   }
   const saveArticle = async (article) => {
     firestore
-      .collection("articles")
+      .collection("posts")
       .add(article)
       .then((docRef) => {
         console.log("Article ID: " + docRef.id);
@@ -131,6 +135,20 @@ const App = () => {
             ></input>
           </div>
           {formik.errors.authorLogo && formik.touched.authorLogo ? <p className="help is-danger">{formik.errors.authorLogo}</p> : null}
+        </div>
+        <div className="field">
+          <label className="label">Article Content</label>
+          <div className="control">
+          <textarea 
+            className="textarea" 
+            name="content"
+            onChange={formik.handleChange}
+            values={formik.values.content}
+            onBlur={formik.handleBlur}
+            >
+            </textarea>
+          </div>
+          {formik.errors.content && formik.touched.content ? <p className="help is-danger">{formik.errors.content}</p> : null}
         </div>
         { isSaved ? renderSaveNotification() : null}
         <br />
